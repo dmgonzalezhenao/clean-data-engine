@@ -1,7 +1,9 @@
-📂 CleanData Engine v1.0
+📂 CleanData Engine v1.0  
+
 CleanData Engine es una herramienta de automatización desarrollada en Python diseñada para la limpieza y validación masiva de bases de datos en formato CSV. El sistema procesa archivos de entrada, valida correos electrónicos mediante expresiones regulares (Regex) y genera archivos depurados de forma eficiente.
 
 🚀 Características Principales
+
 Validación con Regex: Implementa filtros avanzados para asegurar que solo los correos con formato legítimo sean procesados.
 
 Procesamiento Inteligente (DictReader): El motor localiza la columna de "email" automáticamente, sin importar el orden de las columnas en el archivo original.
@@ -24,14 +26,22 @@ Arquitectura Escalable: Estructura modular preparada para integrarse con bases d
 📦 Estructura del Proyecto
 Plaintext
 
-CleanDataEngine/
-├── input/          # Carpeta para los archivos CSV sucios
-├── output/         # Carpeta donde se guardan los archivos limpios
-├── main.py         # Código fuente principal
-├── .gitignore      # Filtro para evitar subir datos sensibles a Git
-└── README.md       # Documentación del proyecto
-🔧 Cómo usarlo
-Clona este repositorio o descarga el archivo main.py.
+CleanDataEngine/  
+
+├── input/          # Carpeta para los archivos CSV sucios  
+
+├── output/         # Carpeta donde se guardan los archivos limpios  
+
+├── main.py         # Código fuente principal  
+
+├── .gitignore      # Filtro para evitar subir datos sensibles a Git  
+
+└── README.md       # Documentación del proyecto  
+
+🔧 Cómo usarlo  
+
+Clona este repositorio o descarga el archivo main.py.  
+
 
 Asegúrate de tener una carpeta llamada input con tus archivos .csv.
 
@@ -39,7 +49,8 @@ Ejecuta el script:
 
 Bash
 
-python main.py
+python main.py  
+
 Sigue las instrucciones del menú interactivo.
 
 Nota: Hay un archivo de prueba llamado sample.csv para que pruebe por usted
