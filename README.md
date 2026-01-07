@@ -6,6 +6,8 @@ Validación con Regex: Implementa filtros avanzados para asegurar que solo los c
 
 Procesamiento Inteligente (DictReader): El motor localiza la columna de "email" automáticamente, sin importar el orden de las columnas en el archivo original.
 
+Reportes de Calidad: Genera un resumen final con el conteo de registros válidos, descartados y porcentaje de efectividad.
+
 Barra de Carga en Tiempo Real: Interfaz visual en consola que muestra el progreso real basado en el volumen de datos de cada archivo.
 
 Manejo de Errores Robusto: Gestión de excepciones para prevenir cierres inesperados si un archivo está bloqueado o corrupto.
@@ -40,6 +42,18 @@ Sigue las instrucciones del menú interactivo.
 
 Nota: Hay un archivo de prueba llamado sample.csv para que pruebe por usted
 mismo el programa.
+
+### 📈 Ejemplo de Reporte Final
+Al finalizar el procesamiento, el motor genera un informe detallado en la consola:
+
+==============================
+📊 REPORTE DE CALIDAD DE DATOS
+==============================
+✅ Registros válidos:    802
+❌ Registros descartados: 198
+🔄 Total procesados:     1000
+📈 Efectividad:          80.2%
+==============================
 
 ⚠️ Seguridad y Buenas Prácticas
 Este proyecto incluye protecciones contra:
