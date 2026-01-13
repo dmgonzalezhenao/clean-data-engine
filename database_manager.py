@@ -66,3 +66,17 @@ def update_file_log(connection, file_name, total_rows, status):
         connection.commit()
     except Exception as e:
         print(f"❌ Error interno en la base de datos: {e}")
+
+def get_file_status(connection, file_name):
+    """
+    Consulta la base de datos para saber en qué estado quedó un archivo.
+    Devuelve el estado (str) o None si el archivo es nuevo.
+    """
+    cursor = connection.cursor()
+    query = "SELECT status FROM processing_log WHERE file_name = ?"
+    
+    cursor.execute(query, (file_name,))
+    result = cursor.fetchone() # Trae la primera fila que coincida
+    
+    # Si existe el registro, devuelve el texto (ej: 'Completado'), si no, devuelve None
+    return result[0] if result else None
