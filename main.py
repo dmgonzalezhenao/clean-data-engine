@@ -1,5 +1,5 @@
 """
-CleanData Engine v1.0
+CleanData Engine v1.1
 Autor: Daniel Mitchel González Henao
 Descripción: Herramienta de automatización para limpieza de CSV con validación Regex.
 """
@@ -8,7 +8,7 @@ import csv
 import sqlite3
 from pathlib import Path
 from cleaner import clean_file
-from database_manager import create_tables, save_to_db, update_file_log, get_file_status
+from database_manager import create_tables, save_to_db, update_file_log, get_file_status, view_report
 
 DB_NAME = "clean_data.db"
 
@@ -54,11 +54,17 @@ def main():
                     # Llamamos a la función procesar para insertar los datos en la base de datos y en el csv
                     procesar_archivo(route_file, output_file, conn)
                 print("🏁 ¡Todo el lote ha sido procesado!")
-                input("Presiona cualquier tecla para volver al menu...")
+
+        elif opcion == "2":
+            print("\n📊 Generando reporte de procesamiento...")
+            view_report(conn)  # Llamamos a la función de lectura
+
         elif opcion == "3":
             print("Saliendo...")
+            conn.close()
             break
 
+        input("Presiona cualquier tecla para volver al menu...")
 
 def inicializar_entorno():
     for dir in ["input", "output"]:
@@ -107,7 +113,7 @@ def procesar_archivo(input_route, output_route, connection):
 
         # SI el bucle terminó sin errores, se actualiza a completado
         update_file_log(connection, input_route.name, procesadas, "Completado")
-        print(f" ✅ {procesadas} líneas.")
+        print(f"\n ✅ {procesadas} líneas.")
 
     except Exception as e:
         # Si algo sale mal, marcamos el error y cuántas llegó a hacer
