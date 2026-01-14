@@ -1,26 +1,24 @@
+# --- Base de Datos ---
+# No subimos la DB porque contiene los datos reales procesados
+clean_data.db
+
+# --- Carpetas de Datos ---
+# No subimos los CSVs de entrada o salida por privacidad
+input/
+output/
+
 # --- Python ---
-# Ignora carpetas de caché que crea Python automáticamente
+# Archivos temporales que genera Python al ejecutarse
 __pycache__/
 *.pyc
-
-# --- Herramientas de Desarrollo ---
-# Ignoramos el script que crea los datos de prueba
+*.pyo
+*.pyd
 generador.py
 
-# --- Seguridad de Datos (CRÍTICO) ---
-# Ignora todos los archivos CSV dentro de input y output.
-# Esto evita que subas datos reales o privados a GitHub por error.
-input/*.csv
-output/*.csv
+# --- Entornos Virtuales ---
+venv/
+env/
 
-# EXCEPCIÓN: Permitir el archivo de muestra para reclutadores
-!input/sample.csv
-
-# --- Archivos de Windows ---
-# Archivos basura que crea Windows para las miniaturas de carpetas
-Thumbs.db
-desktop.ini
-
-# --- Git ---
-# Ignora el archivo de notas si lo tienes abierto
-.gitignore.txt
+# --- Otros ---
+.DS_Store
+.vscode/
