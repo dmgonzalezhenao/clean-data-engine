@@ -1,97 +1,78 @@
-📂 CleanData Engine v1.0  
+# 📂 CleanData Engine v1.1  
 
-CleanData Engine es una herramienta de automatización desarrollada en Python diseñada para la limpieza y validación masiva de bases de datos en formato CSV. El sistema procesa archivos de entrada, valida correos electrónicos mediante expresiones regulares (Regex) y genera archivos depurados de forma eficiente.
-
-🚀 Características Principales
-
-Validación con Regex: Implementa filtros avanzados para asegurar que solo los correos con formato legítimo sean procesados.
-
-Procesamiento Inteligente (DictReader): El motor localiza la columna de "email" automáticamente, sin importar el orden de las columnas en el archivo original.
-
-Reportes de Calidad: Genera un resumen final con el conteo de registros válidos, descartados y porcentaje de efectividad.
-
-Barra de Carga en Tiempo Real: Interfaz visual en consola que muestra el progreso real basado en el volumen de datos de cada archivo.
-
-Manejo de Errores Robusto: Gestión de excepciones para prevenir cierres inesperados si un archivo está bloqueado o corrupto.
-
-Arquitectura Escalable: Estructura modular preparada para integrarse con bases de datos SQL en el futuro.
-
-## 🛠️ Tecnologías Utilizadas
-
-![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
-![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white)
-![Markdown](https://img.shields.io/badge/markdown-%23000000.svg?style=for-the-badge&logo=markdown&logoColor=white)
-![RegEx](https://img.shields.io/badge/RegEx-42a5f5?style=for-the-badge&logo=regex&logoColor=white)
-
-📦 Estructura del Proyecto
-Plaintext
-
-CleanDataEngine/  
-
-├── input/          # Carpeta para los archivos CSV sucios  
-
-├── output/         # Carpeta donde se guardan los archivos limpios  
-
-├── main.py         # Código fuente principal  
-
-├── .gitignore      # Filtro para evitar subir datos sensibles a Git  
-
-└── README.md       # Documentación del proyecto  
-
-🔧 Cómo usarlo  
-
-Clona este repositorio o descarga el archivo main.py.  
-
-
-Asegúrate de tener una carpeta llamada input con tus archivos .csv.
-
-Ejecuta el script:
-
-Bash
-
-python main.py  
-
-Sigue las instrucciones del menú interactivo.
-
-Nota: Hay un archivo de prueba llamado sample.csv para que pruebe por usted
-mismo el programa.
-
-### 📈 Ejemplo de Reporte Final
-Al finalizar el procesamiento, el motor genera un informe detallado en la consola:
-
-==============================
-📊 REPORTE DE CALIDAD DE DATOS
-==============================
-✅ Registros válidos:    802
-❌ Registros descartados: 198
-🔄 Total procesados:     1000
-📈 Efectividad:          80.2%
-==============================
-
-⚠️ Seguridad y Buenas Prácticas
-Este proyecto incluye protecciones contra:
-
-Path Traversal: Uso de os.path.join para manejo seguro de rutas en Windows/Linux.
-
-Memory Efficiency: El procesamiento se realiza línea por línea para evitar el consumo excesivo de RAM en archivos grandes.
-
-Data Integrity: El software nunca modifica el archivo original; siempre genera una copia limpia en la carpeta de salida.
-
-## 🛠️ Mejoras Futuras (Roadmap)
-
-Este proyecto está en constante evolución. Las próximas etapas de desarrollo incluyen:
-
-* **Integración con Bases de Datos (Semana 7):** Migrar el almacenamiento de archivos CSV a una base de datos local **SQLite** para permitir consultas complejas y persistencia de datos profesional.
-* **Interfaz Web (Flask):** Desarrollar un dashboard básico con **Flask** para que los usuarios puedan cargar sus archivos desde un navegador en lugar de la consola.
-* **Reporte de Auditoría PDF:** Generar automáticamente un reporte visual (PDF) que resuma las estadísticas de limpieza (registros exitosos vs. descartados).
-* **Soporte Multiformato:** Ampliar la capacidad del motor para procesar archivos JSON y Excel (.xlsx).
-
-## 👤 Autor
-
-Desarrollado con dedicación por Daniel Mitchell González Henao.
-
-* **LinkedIn:** www.linkedin.com/in/daniel-gonzález-551b22305
-* **Email:** dmgh20212022@gmail.com
+**CleanData Engine** is a high-performance automation tool built with Python, designed for bulk cleaning and validation of CSV datasets. The system streamlines data workflows by validating emails via Regex and **managing data persistence through a professional SQL architecture.**
 
 ---
-*Este proyecto fue creado como parte de mi proceso de aprendizaje en el desarrollo Backend, aplicando conceptos de CS50 y lógica avanzada de Python.*
+
+## 🚀 Key Features
+
+* **SQL Persistence (SQLite3):** Automatically stores clean emails, discarded records (with error reasons), and an audit log for every processed file.
+* **Idempotency & State Control:** The engine recognizes completed or interrupted tasks, preventing data duplication and optimizing execution time.
+* **Regex Validation:** Advanced filtering logic to ensure legitimate email formats.
+* **Real-time Audit Reports:** Interactive CLI menu to query processing history directly from the database.
+* **Live Progress Monitoring:** Visual feedback using `█` blocks to track processing status for massive datasets.
+
+## 🛠️ Tech Stack
+
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
+![SQLite](https://img.shields.io/badge/sqlite-%2307405e.svg?style=for-the-badge&logo=sqlite&logoColor=white)
+![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white)
+![RegEx](https://img.shields.io/badge/RegEx-42a5f5?style=for-the-badge&logo=regex&logoColor=white)
+
+## 📦 Project Structure
+
+```plaintext
+CleanDataEngine/  
+├── input/             # Source CSV files to be processed
+├── output/            # Resulting cleaned CSV files
+├── main.py            # Main Orchestrator & CLI Menu
+├── cleaner.py         # Cleaning logic & Regex validation
+├── database_manager.py # SQL Table management & Queries
+├── clean_data.db      # Local Database (Auto-generated)
+├── .gitignore         # Sensitive data protection
+└── README.md          # Project documentation
+
+🔧 How to Use
+Clone the repository: git clone https://github.com/your-username/CleanDataEngine.git
+
+Prepare your data: Place your .csv files inside the /input folder.
+
+Run the system: python main.py
+
+Interactive Menu:
+
+Press 1 to process new files.
+
+Press 2 to view the processing report from the DB.
+
+📈 SQL Report Example (Option 2)
+
+======================================================================
+FILE NAME                 ║ ROWS     ║ STATUS          ║ TIMESTAMP
+──────────────────────────────────────────────────────────────────────
+march_leads.csv           ║ 5000     ║ ✅ DONE         ║ 2026-01-13
+test_data_error.csv       ║ 402      ║ ❌ ERROR LINE 403║ 2026-01-13
+======================================================================
+
+🛡️ Security & Best Practices
+Memory Efficiency: Processing is done line-by-line to prevent high RAM consumption on large files.
+
+Data Integrity: The software never modifies the original source; it always generates a clean copy.
+
+Path Safety: Uses pathlib for robust cross-platform file management.
+
+🛠️ Future Roadmap (AI DevOps Specialization)
+[ ] Containerization (Docker): Create a lightweight image for instant deployment.
+
+[ ] FastAPI Integration: Convert the engine into a REST API for cloud-based services.
+
+[ ] Vector DB & AI: Implement similarity analysis using embeddings for string deduplication.
+
+👤 Author
+Developed with dedication by Daniel Mitchell González Henao.
+
+LinkedIn: linkedin.com/in/daniel-gonzález-551b22305
+
+Email: dmgh20212022@gmail.com
+
+This project was created as part of a Backend Development learning path, applying CS50 principles and advanced Python logic.
