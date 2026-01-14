@@ -7,98 +7,120 @@ Descripción: Herramienta de automatización para limpieza de CSV con validació
 import csv
 import sqlite3
 from pathlib import Path
+from cleaner import clean_file
+from database_manager import create_tables, save_to_db, update_file_log, get_file_status
 
 DB_NAME = "clean_data.db"
 
 def main():
+    # Crea las carpetas input y output y la base de datos
     inicializar_entorno()
-    while True:
-        archivos = [f for f in os.listdir("input") if f.endswith('.csv')]
-        
-        if not archivos:
-            print("❌ No hay archivos .csv en 'input/'. Agrega archivos y presiona Enter.")
-            input()
-            continue # Vuelve a buscar archivos
+    create_tables()
 
-        opcion = mostrar_menu(len(archivos))
-        
+    # Conexión a la base de datos del programa, para que sólo se abra cuando se inicia el programa 
+    # y solo se cierre cuando se termine de ejecutar el programa
+    conn = sqlite3.connect("clean_data.db")
+    # Mostramos el menú para que el usuario decida qué hacer
+
+
+    while True:
+        opcion = mostrar_menu()
+
         if opcion == "1":
-            procesar_carpeta(archivos)
-            print("\n✨ Proceso terminado.")
-            input("Presiona Enter para volver al menú...")
-        elif opcion == "2":
-            print("👋 Saliendo..."); break
-        else:
-            print("✖️ Opción no válida.")
+            print("\n🚀 Iniciando procesamiento...")
+
+            # Definir la lista de archivos en el input
+            input_dir = Path("input")
+            files = list(input_dir.glob("*.csv"))
+
+            # Verificamos si no hay archivos antes de hacer cualquier proceso
+            if not files:
+                print("📭 No se encontraron archivos CSV en la carpeta 'input'.")
+            else:
+                # Recorrer archivo por archivo para procesar y limpiar cada uno
+                for route_file in files:
+
+                    # Preguntamos a la base de datos si el archivo ya fue procesado o si se quedó a medio camino
+                    estado = get_file_status(conn, route_file.name)
+
+                    if estado == "Completado":
+                        print(f"⏭️  Saltando {route_file.name} (Ya procesado)")
+                        continue
+
+                    # Definimos la salida
+                    output_dir = Path("output")
+                    output_file = output_dir / f"clean_{route_file.name}"
+                    
+                    # Llamamos a la función procesar para insertar los datos en la base de datos y en el csv
+                    procesar_archivo(route_file, output_file, conn)
+                print("🏁 ¡Todo el lote ha sido procesado!")
+                input("Presiona cualquier tecla para volver al menu...")
+        elif opcion == "3":
+            print("Saliendo...")
+            break
+
 
 def inicializar_entorno():
-    for carpeta in ["input", "output"]:
-        if not os.path.exists(carpeta):
-            os.makedirs(carpeta)
-            print(f"📁 Carpeta '{carpeta}' creada.")
+    for dir in ["input", "output"]:
+        # Crea ambas carpetas
+        route = Path(dir)
+        # Comprueba si existen o no
+        route.mkdir(parents=True, exist_ok=True)
 
+def procesar_archivo(input_route, output_route, connection):
+    # Llevamos registro de las líneas ya procesadas, en caso de que falle el programa a medio proceso
+    procesadas = 0
 
-    """except
-        # 2. Procesar con DictReader (para que no importe el orden de las columnas)
+    try:
+        # Empezamos con el proceso
+        update_file_log(connection, input_route.name, 0, "En Proceso")
+
         with open(input_route, 'r', encoding='utf-8', errors='ignore') as f_in, \
-             open(ruta_salida, 'w', encoding='utf-8', newline='') as f_out:
+             open(output_route, 'w', encoding='utf-8', newline='') as f_out:
             
             lector = csv.DictReader(f_in)
             escritor = csv.DictWriter(f_out, fieldnames=lector.fieldnames)
             escritor.writeheader()
 
-            print("█", end="", flush=True)
-            
-            longitud_barra = 20
-            procesadas = 0
-
             for fila in lector:
-                #Contamos cada línea analizada
-                estadisticas["totales"] += 1
-                # Buscamos la columna que contenga 'email' (sin importar mayúsculas)
-                columna_email = next((k for k in fila if 'email' in k.lower()), None)
-                
-                if columna_email:
-                    email_sucio = fila[columna_email].strip()
-                    
-                    if re.match(patron, email_sucio):
-                        escritor.writerow(fila)
-                        estadisticas["buenos"] += 1
-                    else:
-                        # Si no cumple el patron, es un registro malo
-                        estadisticas["malos"] += 1
 
-                # Actualizar barra
+                email_original = fila.get('email', '') # Cambia 'email' por el nombre de tu columna
+            
+                # Limpiar por fila
+                email_limpio = clean_file(email_original)
+            
+                # Guardar en DB 
+                save_to_db(connection, email_limpio, email_original, input_route.name)
+            
+                # Escribir en el nuevo CSV
+                # Aquí decides si escribes toda la fila o solo el email
+                if email_limpio:
+                    fila['email'] = email_limpio
+                else:
+                    fila['email'] = f"⚠️ INVALIDO ({email_original})"
+                escritor.writerow(fila)
                 procesadas += 1
-                progreso = int((procesadas / total_lineas) * (longitud_barra - 1))
-                pasado = int(((procesadas - 1) / total_lineas) * (longitud_barra - 1))
-                if progreso > pasado:
+                
+                # Feedback visual de progreso
+                if procesadas % 100 == 0:
                     print("█", end="", flush=True)
 
-            #Imprimir las estadísticas de los datos totales analizados, los válidos, los descartados
-            #y la efectividad
-            total = estadisticas["totales"] if estadisticas["totales"] > 0 else 1
-            print(f"\n\n--- REPORTE FINAL ---")
-            print(f"✅ Válidos: {estadisticas['buenos']}")
-            print(f"❌ Descartados: {estadisticas['malos']}")
-            print(f"📊 Efectividad: {(estadisticas['buenos'] / total) * 100:.1f}%")
+        # SI el bucle terminó sin errores, se actualiza a completado
+        update_file_log(connection, input_route.name, procesadas, "Completado")
+        print(f" ✅ {procesadas} líneas.")
+
     except Exception as e:
-        print(f"\n❌ Error crítico en archivo: {e}")"""
+        # Si algo sale mal, marcamos el error y cuántas llegó a hacer
+        mensaje_error = f"Error en línea {procesadas + 1}: {str(e)[:50]}"
+        update_file_log(connection, input_route.name, procesadas, mensaje_error)
+        print(f" ❌ Falló: {mensaje_error}")
 
-def procesar_carpeta(archivos):
-    print(f"\n🚀 Procesando {len(archivos)} archivos...\n")
-    for nombre in archivos:
-        ruta_in = os.path.join("input", nombre)
-        ruta_out = os.path.join("output", f"limpio_{nombre}")
-        
-        print(f"📄 {nombre}: ", end="")
-        limpiar_archivo(ruta_in, ruta_out)
-        print(" ✅")
-
-def mostrar_menu(cantidad):
-    print("\n" + "="*30 + "\n   CLEANDATA ENGINE v1.0\n" + "="*30)
-    print(f"📂 Archivos en input: {cantidad}\n1. Iniciar\n2. Salir")
-    return input("👉 Selecciona: ").strip()
+def mostrar_menu():
+    print("\n--- 📧 CleanData Engine v1.1 ---")
+    print("1. Procesar archivos en carpeta /input")
+    print("2. Ver reporte de procesamiento (Log)")
+    print("3. Salir")
+    return input("Selecciona una opción: ")
 
 if __name__ == "__main__":
     main()
