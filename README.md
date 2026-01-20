@@ -31,6 +31,7 @@ CleanDataEngine/
 ├── clean_data.db      # Local Database (Auto-generated)
 ├── .gitignore         # Sensitive data protection
 └── README.md          # Project documentation
+```
 
 🔧 How to Use
 Clone the repository: git clone https://github.com/your-username/CleanDataEngine.git
